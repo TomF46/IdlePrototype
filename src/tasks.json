@@ -1,0 +1,16 @@
+{
+    "tasks" : [
+        {
+            "id" : 1,
+            "name" : "Task 1",
+            "timeToComplete" : 1000,
+            "payment" : 2
+        },
+        {
+            "id": 2,
+            "name" : "Task 2",
+            "timeToComplete" : 10000,
+            "payment" : 10
+        }
+    ]
+}

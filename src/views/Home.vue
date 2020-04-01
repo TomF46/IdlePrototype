@@ -1,18 +1,29 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    
+    <task v-for="(task, i) in tasks" :key="i" :task="task"></task>
+    <!-- <task :timeToComplete="100"></task> -->
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Task from '../components/Task'
 
 export default {
   name: 'Home',
-  components: {
-    HelloWorld
+  components:{
+     Task
+  },
+  computed: {
+    tasks() {
+      return this.$store.state.tasks;
+    },
+  },
+  methods:{
   }
 }
 </script>
+
+<style lang="scss">
+
+</style>

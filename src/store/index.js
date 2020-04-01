@@ -6,21 +6,27 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    totalCurrency: 0,
+    player:{
+      totalCurrency: 0,
+      taskData: []
+    },
     tasks: {}
   },
   mutations: {
     setTotalCurrency(state, total){
-      state.totalCurrency = total;
+      state.player.totalCurrency = total;
     },
     addCurrency(state, amount){
-      state.totalCurrency = state.totalCurrency + amount;
+      state.player.totalCurrency = state.player.totalCurrency + amount;
     },
     subtractCurrency(state, amount){
-      state.totalCurrency = state.totalCurrency - amount;
+      state.player.totalCurrency = state.player.totalCurrency - amount;
     },
     setTasks(state, tasks){
       state.tasks = tasks;
+    },
+    setPlayerTaskData(state, data){
+      state.player.taskData = data;
     }
   },
   actions: {
@@ -28,6 +34,34 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit("setTasks", Tasks.tasks);
         resolve();
+      });
+    },
+    loadPlayerData({ commit, dispatch }){
+      Vue.prototype.$storage.get("playerData").then(data => {
+        if(data == null){
+          dispatch("setUserTaskData");
+          dispatch("savePlayerData");
+          return;
+        }
+
+        this.state.player = data;
+        dispatch("setUserTaskData");
+      }).catch(err => {
+        alert("Error retrieving player data");
+      })
+    },
+    savePlayerData(){
+      Vue.prototype.$storage.set("playerData", this.state.player).then(data => {
+        console.log("Saved");
+      }).catch(err => {
+        alert("Error saving player data");
+      })
+    },
+    setUserTaskData(){
+      this.state.tasks.forEach((task) => {
+        if(this.state.player.taskData.some(taskDataItem => taskDataItem.id == task.id) == false){
+          this.state.player.taskData.push({id: task.id, level : 1})
+        }
       });
     }
   },

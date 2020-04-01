@@ -25,7 +25,6 @@ export default {
     var percentageComplete = (timeComplete / this.miliseconds ) * 100;
 
     if(this.active == false ) percentageComplete = 0;
-    console.log(percentageComplete);
 
     return {
         'width' : percentageComplete + '%'

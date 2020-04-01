@@ -11,7 +11,7 @@ export default {
   name: 'Header',
   computed: {
     money(){
-      return this.$store.state.totalCurrency
+      return this.$store.state.player.totalCurrency
     }
   }
 }

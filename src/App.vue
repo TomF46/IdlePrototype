@@ -18,7 +18,7 @@ export default {
   },
   mounted(){
     this.$store.dispatch("loadTasks");
-    
+    this.$store.dispatch("loadPlayerData");
   }
 }
 </script>

@@ -29,7 +29,9 @@ export default {
           return taskData.level;
       },
       levelUpCost(){
-          return this.currentLevel * 1.15;
+          var taskData = this.$store.state.player.taskData.find(task => task.id == this.task.id);
+          if(taskData == null) throw "something has gone wrong, alert this one day";
+          return taskData.levelUpCost;
       },
       payment(){
           return this.task.defaultPayment * this.currentLevel;
@@ -60,6 +62,7 @@ export default {
         var taskData = newTaskData.find(task => task.id == this.task.id);
         var index = newTaskData.indexOf(taskData);
         newTaskData[index].level++;
+        newTaskData[index].levelUpCost = newTaskData[index].levelUpCost * 1.15; //Scale up cost by 1.15 times
         this.$store.commit("setPlayerTaskData", newTaskData);
         this.$store.dispatch("savePlayerData");
     }

@@ -1,13 +1,13 @@
 <template>
   <div class="task">
-    <p>{{task.name}} -  Current level : {{currentLevel}} - Earns : {{this.payment}} </p>
+    <p>{{task.name}} -  Current level : {{currentLevel}} - Earns : {{this.paymentDisplay}} </p>
     <progress-bar
       ref="progressbar"
       :miliseconds="task.timeToComplete"
       @taskFinished="onTaskFinished"
     ></progress-bar>
     <button @click="runTask">Run</button>
-    <button @click="levelUp">Level up: {{levelUpCost}}</button>
+    <button @click="levelUp">Level up: {{levelUpCostDisplay}}</button>
   </div>
 </template>
 
@@ -29,10 +29,16 @@ export default {
           return taskData.level;
       },
       levelUpCost(){
-          return this.currentLevel * 10;
+          return this.currentLevel * 1.15;
       },
       payment(){
           return this.task.defaultPayment * this.currentLevel;
+      },
+      paymentDisplay(){
+          return this.$currenctFormatter.format(this.payment);
+      },
+      levelUpCostDisplay(){
+        return this.$currenctFormatter.format(this.levelUpCost);
       }
   },
   methods: {

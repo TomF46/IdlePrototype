@@ -24,13 +24,13 @@ export default {
   },
   computed: {
       currentLevel(){
-          var taskData = this.$store.state.player.taskData.find(task => task.id == this.task.id);
-          if(taskData == null) return 1;
+          var taskData = this.getUserTaskData();
+          if(taskData == null) if(taskData == null) this.$alerts.notification('error',"Unable to determine task level", "Not sure how this has happened");
           return taskData.level;
       },
       levelUpCost(){
-          var taskData = this.$store.state.player.taskData.find(task => task.id == this.task.id);
-          if(taskData == null) throw "something has gone wrong, alert this one day";
+          var taskData = this.getUserTaskData();
+          if(taskData == null) this.$alerts.notification('error',"Unable to find level up cost", "Not sure how this has happened");
           return taskData.levelUpCost;
       },
       payment(){
@@ -53,7 +53,7 @@ export default {
     },
     levelUp(){
         if(this.$store.state.player.totalCurrency < this.levelUpCost){
-            alert("Cant afford");
+            this.$alerts.notification('error',"Can't afford", "You can't afford this upgrade");
             return;
         }
 
@@ -65,6 +65,9 @@ export default {
         newTaskData[index].levelUpCost = newTaskData[index].levelUpCost * this.$settings.costMultiplier; //Scale up cost by cost multiplier
         this.$store.commit("setPlayerTaskData", newTaskData);
         this.$store.dispatch("savePlayerData");
+    },
+    getUserTaskData(){
+      return this.$store.state.player.taskData.find(task => task.id == this.task.id);
     }
   }
 };

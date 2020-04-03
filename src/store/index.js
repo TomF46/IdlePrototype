@@ -37,24 +37,28 @@ export default new Vuex.Store({
       });
     },
     loadPlayerData({ commit, dispatch }){
-      Vue.prototype.$storage.get("playerData").then(data => {
-        if(data == null){
-          dispatch("setUserTaskData");
-          dispatch("savePlayerData");
-          return;
-        }
+      return new Promise((resolve, reject) => {
+        Vue.prototype.$storage.get("playerData").then(data => {
+          if(data == null){
+            dispatch("setUserTaskData");
+            dispatch("savePlayerData");
+            resolve();
+            return;
+          }
 
-        this.state.player = data;
-        dispatch("setUserTaskData");
-      }).catch(err => {
-        alert("Error retrieving player data");
-      })
+          this.state.player = data;
+          dispatch("setUserTaskData");
+          resolve();
+        }).catch(err => {
+          reject();
+        })
+      });
     },
     savePlayerData(){
       Vue.prototype.$storage.set("playerData", this.state.player).then(data => {
         console.log("Saved");
       }).catch(err => {
-        alert("Error saving player data");
+        Vue.prototype.$alerts.notification('error',"Unable to determine task level", "Not sure how this has happened");
       })
     },
     setUserTaskData(){

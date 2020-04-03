@@ -1,7 +1,10 @@
 <template>
   <div id="app">
-    <idle-header></idle-header>
-    <router-view/>
+    <div v-if="loaded">
+      <idle-header></idle-header>
+      <router-view/>
+      <notifications group="notify" position="bottom center" />
+    </div>
   </div>
 </template>
 
@@ -14,11 +17,16 @@ export default {
   },
   data: function() {
     return {
+      loaded: false
     };
   },
   mounted(){
     this.$store.dispatch("loadTasks");
-    this.$store.dispatch("loadPlayerData");
+    this.$store.dispatch("loadPlayerData").then(res => {
+      this.loaded = true;
+    }).catch(err =>{
+      this.$alerts.notification('error',"Unable to load player data", "Not sure how this has happened");
+    });
   }
 }
 </script>

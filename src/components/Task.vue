@@ -62,7 +62,7 @@ export default {
         var taskData = newTaskData.find(task => task.id == this.task.id);
         var index = newTaskData.indexOf(taskData);
         newTaskData[index].level++;
-        newTaskData[index].levelUpCost = newTaskData[index].levelUpCost * 1.15; //Scale up cost by 1.15 times
+        newTaskData[index].levelUpCost = newTaskData[index].levelUpCost * this.$settings.costMultiplier; //Scale up cost by cost multiplier
         this.$store.commit("setPlayerTaskData", newTaskData);
         this.$store.dispatch("savePlayerData");
     }

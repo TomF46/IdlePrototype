@@ -64,7 +64,7 @@ export default new Vuex.Store({
     setUserTaskData(){
       this.state.tasks.forEach((task) => {
         if(this.state.player.taskData.some(taskDataItem => taskDataItem.id == task.id) == false){
-          this.state.player.taskData.push({id: task.id, level : 1, levelUpCost: task.initialLevelUpCost})
+          this.state.player.taskData.push({id: task.id, automated: false ,level : 1, levelUpCost: task.initialLevelUpCost})
         }
       });
     },

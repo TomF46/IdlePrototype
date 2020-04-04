@@ -5,14 +5,17 @@
             "name" : "Task 1",
             "timeToComplete" : 1000,
             "defaultPayment" : 2,
-            "initialLevelUpCost": 10
+            "initialLevelUpCost": 10,
+            "automationCost" : 100
         },
         {
             "id": 2,
             "name" : "Task 2",
             "timeToComplete" : 10000,
             "defaultPayment" : 10,
-            "initialLevelUpCost": 100
+            "initialLevelUpCost": 100,
+            "automationCost" : 15000
+
         }
     ]
 }

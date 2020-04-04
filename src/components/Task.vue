@@ -1,13 +1,15 @@
 <template>
   <div class="task">
-    <p>{{task.name}} -  Current level : {{currentLevel}} - Earns : {{this.paymentDisplay}} </p>
+    <p>{{task.name}} -  Current level : {{taskData.level}} - Earns : {{this.paymentDisplay}} </p>
     <progress-bar
       ref="progressbar"
       :miliseconds="task.timeToComplete"
       @taskFinished="onTaskFinished"
     ></progress-bar>
-    <button @click="runTask">Run</button>
+    <button v-if="!taskData.automated" @click="runTask">Run</button>
     <button @click="levelUp">Level up: {{levelUpCostDisplay}}</button>
+    <button v-if="!taskData.automated" @click="unlockAutomation">Unlock automation: {{automationCostDisplay}}</button>
+    <p v-if="taskData.automated">Task automated</p>
   </div>
 </template>
 
@@ -23,25 +25,26 @@ export default {
     task: Object
   },
   computed: {
-      currentLevel(){
-          var taskData = this.getUserTaskData();
-          if(taskData == null) if(taskData == null) this.$alerts.notification('error',"Unable to determine task level", "Not sure how this has happened");
-          return taskData.level;
-      },
-      levelUpCost(){
+      taskData(){
           var taskData = this.getUserTaskData();
           if(taskData == null) this.$alerts.notification('error',"Unable to find level up cost", "Not sure how this has happened");
-          return taskData.levelUpCost;
+          return taskData; 
       },
       payment(){
-          return this.task.defaultPayment * this.currentLevel;
+          return this.task.defaultPayment * this.taskData.level;
       },
       paymentDisplay(){
           return this.$currenctFormatter.format(this.payment);
       },
       levelUpCostDisplay(){
-        return this.$currenctFormatter.format(this.levelUpCost);
+        return this.$currenctFormatter.format(this.taskData.levelUpCost);
+      },
+      automationCostDisplay(){
+        return this.$currenctFormatter.format(this.task.automationCost);
       }
+  },
+  mounted(){
+    if(this.taskData.automated) this.runTask();
   },
   methods: {
     runTask() {
@@ -50,14 +53,15 @@ export default {
     onTaskFinished() {
       this.$store.commit("addCurrency", this.payment);
       this.$store.dispatch("savePlayerData");
+      if(this.taskData.automated) this.runTask();
     },
     levelUp(){
-        if(this.$store.state.player.totalCurrency < this.levelUpCost){
+        if(this.$store.state.player.totalCurrency < this.taskData.levelUpCost){
             this.$alerts.notification('error',"Can't afford", "You can't afford this upgrade");
             return;
         }
 
-        this.$store.commit("subtractCurrency", this.levelUpCost);
+        this.$store.commit("subtractCurrency", this.taskData.levelUpCost);
         var newTaskData = this.$store.state.player.taskData;
         var taskData = newTaskData.find(task => task.id == this.task.id);
         var index = newTaskData.indexOf(taskData);
@@ -68,6 +72,21 @@ export default {
     },
     getUserTaskData(){
       return this.$store.state.player.taskData.find(task => task.id == this.task.id);
+    },
+    unlockAutomation(){
+      if(this.$store.state.player.totalCurrency < this.task.automationCost){
+        this.$alerts.notification('error',"Can't afford", "You can't afford automation");
+        return;
+      }
+
+      this.$store.commit("subtractCurrency", this.task.automationCost);
+      var newTaskData = this.$store.state.player.taskData;
+      var taskData = newTaskData.find(task => task.id == this.task.id);
+      var index = newTaskData.indexOf(taskData);
+      newTaskData[index].automated = true;
+      this.$store.commit("setPlayerTaskData", newTaskData);
+      this.$store.dispatch("savePlayerData");
+      this.runTask();
     }
   }
 };

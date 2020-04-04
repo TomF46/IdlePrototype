@@ -1,7 +1,7 @@
 <template>
     <div class="header">
         <div class="logo">
-            <p>Idle Prototype --  Money: {{money}}</p>
+            <p>Idle Prototype --  Money: {{money}} <button class="reset-button" @click="confirmReset">Reset</button></p>
         </div>
     </div>
 </template>
@@ -12,6 +12,15 @@ export default {
   computed: {
     money(){
       return this.$currenctFormatter.format(this.$store.state.player.totalCurrency);
+    }
+  },
+  methods:{
+    confirmReset(){
+      var consent = confirm("Are you sure you want to reset all progression?")
+      if(consent) this.reset();
+    },
+    reset(){
+      this.$store.dispatch("resetData");
     }
   }
 }
@@ -28,6 +37,14 @@ export default {
         font-size: 26px;
         padding: 20px;
         margin: 0;
+    }
+
+    .reset-button{
+      margin: 20px;
+      padding: 10px;
+      border: 1px solid #eee;
+      background-color: #9B1003;
+      color: #eee;
     }
 }
 </style>

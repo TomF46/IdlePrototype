@@ -67,6 +67,16 @@ export default new Vuex.Store({
           this.state.player.taskData.push({id: task.id, level : 1, levelUpCost: task.initialLevelUpCost})
         }
       });
+    },
+    resetData({dispatch}){
+      Vue.prototype.$storage.removeAll().then(res => {
+        this.state.player.totalCurrency = 0;
+        this.state.player.taskData = [];
+        dispatch("setUserTaskData");
+        Vue.prototype.$alerts.notification('success',"Reset", "Data has been reset");
+      }).catch(error =>{
+        Vue.prototype.$alerts.notification('error',"Unable to reset data", "Not sure how this has happened");
+      });
     }
   },
   modules: {

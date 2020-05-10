@@ -4,6 +4,7 @@
     <progress-bar
       ref="progressbar"
       :miliseconds="task.timeToComplete"
+      :overrunOwed="owedTime"
       @taskFinished="onTaskFinished"
     ></progress-bar>
     <button v-if="!taskData.automated" @click="runTask">Run</button>
@@ -23,6 +24,11 @@ export default {
   },
   props: {
     task: Object
+  },
+  data: function() {
+    return {
+        owedTime: 0
+    };
   },
   computed: {
       taskData(){
@@ -50,9 +56,17 @@ export default {
     runTask() {
       this.$refs.progressbar.start();
     },
-    onTaskFinished() {
+    onTaskFinished(overrun) {
       this.$store.commit("addCurrency", this.payment);
       this.$store.dispatch("savePlayerData");
+
+      // If overrun is greater than the time to complete a task pay the user for those tasks until the overrun owed is less than the task time
+      while(overrun > this.task.timeToComplete){
+        this.$store.commit("addCurrency", this.payment);
+        this.$store.dispatch("savePlayerData");
+        overrun = overrun - this.task.timeToComplete; 
+      }
+      this.owedTime = overrun;
       if(this.taskData.automated) this.runTask();
     },
     levelUp(){

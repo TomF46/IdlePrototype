@@ -10,19 +10,22 @@
 export default {
   name: 'progress-bar',
   props:{
-    miliseconds: Number
+    miliseconds: Number,
+    overrunOwed : Number
   },
   data: function() {
     return {
         remainingTime: 0,
         timerIncrement: 10,
-        active: false
+        active: false,
+        startTime: null,
+        totalRunningTime: 0
     };
   },
   computed: {
     barStyles(){
-    var timeComplete = this.miliseconds - this.remainingTime;
-    var percentageComplete = (timeComplete / this.miliseconds ) * 100;
+    var timeComplete = this.totalRunningTime - this.remainingTime;
+    var percentageComplete = (timeComplete / this.totalRunningTime ) * 100;
 
     if(this.active == false ) percentageComplete = 0;
 
@@ -33,23 +36,46 @@ export default {
   },
   methods:{
     start(){
-
         if(this.remainingTime > 0) return;
         this.active = true;
-
-        this.remainingTime = this.miliseconds;
-        var progressTimer = setInterval(() => {
-            this.remainingTime = this.remainingTime - this.timerIncrement;
-            if(this.remainingTime <= 0){
-                this.onFinish();
-                clearInterval(progressTimer);
-            }
-        },this.timerIncrement);
+        this.totalRunningTime = this.miliseconds - this.overrunOwed;
+        this.remainingTime = this.miliseconds - this.overrunOwed;
+        this.animateProgress();
+        this.runTaskTimer();
     },
-    onFinish(){
+    onFinish(overrun){
         this.active = false;
-      this.$emit("taskFinished");
-    }
+        this.remainingTime = 0;
+      this.$emit("taskFinished", overrun);
+    },
+    animateProgress(){
+      requestAnimationFrame((timestamp) =>{
+          this.startTime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
+          this.updateProgress(timestamp) // 400px over 1 second
+      })
+    },
+    updateProgress(timestamp){
+      var timestamp = timestamp || new Date().getTime()
+      var runtime = timestamp - this.startTime;
+
+      
+      if (runtime < this.totalRunningTime){ // if duration not met yet
+        this.remainingTime = this.totalRunningTime - runtime;
+        requestAnimationFrame((timestamp) => { // call requestAnimationFrame again with parameters
+            this.updateProgress(timestamp)
+        })
+      }
+    },
+   runTaskTimer(){
+     var taskStartTime = new Date().getTime();
+     setTimeout(() => {
+       var finishTime = new Date().getTime();
+       var runtime = finishTime - taskStartTime;
+       var overrun = runtime - this.totalRunningTime;
+       // In background setTimeout may be throttled, so calculate how long its really been running , return this number so we can calculate real complete actions
+       this.onFinish(overrun);
+     }, this.totalRunningTime)
+   }
   },
   mounted(){
 

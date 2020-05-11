@@ -3,6 +3,7 @@
         <div class="bar-outline">
             <div class="bar-progress" :style="barStyles"></div>
         </div>
+        {{this.active}}
     </div>
 </template>
 
@@ -36,7 +37,7 @@ export default {
   },
   methods:{
     start(){
-        if(this.remainingTime > 0) return;
+        if(this.active == true) return;
         this.active = true;
         this.totalRunningTime = this.miliseconds - this.overrunOwed;
         this.remainingTime = this.miliseconds - this.overrunOwed;

@@ -8,7 +8,8 @@ export default new Vuex.Store({
   state: {
     player:{
       totalCurrency: 0,
-      taskData: []
+      taskData: [],
+      actionLog: []
     },
     tasks: {}
   },
@@ -27,6 +28,11 @@ export default new Vuex.Store({
     },
     setPlayerTaskData(state, data){
       state.player.taskData = data;
+    },
+    addActionToLog(state, action){
+      var timestamp =  new Date().getTime();
+      var logItem = {dateTime : new Date(timestamp), action: action};
+      state.player.actionLog.push(logItem);
     }
   },
   actions: {
@@ -72,12 +78,13 @@ export default new Vuex.Store({
       Vue.prototype.$storage.removeAll().then(res => {
         this.state.player.totalCurrency = 0;
         this.state.player.taskData = [];
+        this.state.player.actionLog = [];
         dispatch("setUserTaskData");
         Vue.prototype.$alerts.notification('success',"Reset", "Data has been reset");
       }).catch(error =>{
         Vue.prototype.$alerts.notification('error',"Unable to reset data", "Not sure how this has happened");
       });
-    }
+    },
   },
   modules: {
   }

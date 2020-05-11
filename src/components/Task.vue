@@ -54,16 +54,15 @@ export default {
   },
   methods: {
     runTask() {
+      console.log("Clicked");
       this.$refs.progressbar.start();
     },
     onTaskFinished(overrun) {
-      this.$store.commit("addCurrency", this.payment);
-      this.$store.dispatch("savePlayerData");
+      this.payUser();
 
       // If overrun is greater than the time to complete a task pay the user for those tasks until the overrun owed is less than the task time
       while(overrun > this.task.timeToComplete){
-        this.$store.commit("addCurrency", this.payment);
-        this.$store.dispatch("savePlayerData");
+        this.payUser();
         overrun = overrun - this.task.timeToComplete; 
       }
       this.owedTime = overrun;
@@ -101,6 +100,11 @@ export default {
       this.$store.commit("setPlayerTaskData", newTaskData);
       this.$store.dispatch("savePlayerData");
       this.runTask();
+    },
+    payUser(){
+      this.$store.commit("addCurrency", this.payment);
+      this.$store.commit("addActionToLog", `Completed ${this.task.name}`)
+      this.$store.dispatch("savePlayerData");
     }
   }
 };

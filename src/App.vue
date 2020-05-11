@@ -2,7 +2,9 @@
   <div id="app">
     <div v-if="loaded">
       <idle-header></idle-header>
+      <keep-alive>
       <router-view/>
+      </keep-alive>
       <notifications group="notify" position="bottom center" />
     </div>
   </div>
